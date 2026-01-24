@@ -136,8 +136,20 @@ async function loadView(view) {
 
 // Apply theme
 function applyTheme(theme) {
+  console.log('Applying theme:', theme);
   const themeStylesheet = document.getElementById('theme-stylesheet');
+  if (!themeStylesheet) {
+    console.error('Theme stylesheet element not found!');
+    return;
+  }
   themeStylesheet.href = `styles/themes/${theme}.css`;
+  
+  // Update state
+  if (window.state && window.state.settings) {
+    window.state.settings.theme = theme;
+  }
+  
+  console.log('Theme applied successfully:', theme);
 }
 
 // Format date

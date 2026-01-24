@@ -566,7 +566,7 @@ async function renderSettings() {
         <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;">
           Theme
         </label>
-        <select class="input" id="theme-select" onchange="handleThemeChange(this.value)" style="width: 300px;">
+        <select class="input" id="theme-select" style="width: 300px;">
           <option value="night-drive" ${settings.theme === "night-drive" ? "selected" : ""}>Night Drive (Dark)</option>
           <option value="overdrive" ${settings.theme === "overdrive" ? "selected" : ""}>Overdrive (Dark Purple)</option>
           <option value="steady-cruise" ${settings.theme === "steady-cruise" ? "selected" : ""}>Steady Cruise (Light)</option>
@@ -578,7 +578,7 @@ async function renderSettings() {
       <h3 style="margin-bottom: 16px; color: var(--text-primary);">Table configuration</h3>
       <div style="margin-bottom: 8px;">
         <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;">Items per page</label>
-        <select class="input" id="page-size-select" onchange="handleSettingChange('pageSize', Number(this.value))" style="width: 300px;">
+        <select class="input" id="page-size-select" style="width: 300px;">
           <option value="10" ${(settings.pageSize ?? 10) === 10 ? "selected" : ""}>10</option>
           <option value="15" ${settings.pageSize === 15 ? "selected" : ""}>15</option>
           <option value="20" ${settings.pageSize === 20 ? "selected" : ""}>20</option>
@@ -596,8 +596,7 @@ async function renderSettings() {
         <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 14px;">
           Brew Binary Path
         </label>
-        <input type="text" class="input" id="brew-path" value="${settings.brewPath}" 
-               onchange="handleSettingChange('brewPath', this.value)" style="width: 300px;">
+        <input type="text" class="input" id="brew-path" value="${settings.brewPath}" style="width: 300px;">
         <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
           Default: /opt/homebrew/bin/brew (Apple Silicon) or /usr/local/bin/brew (Intel)
         </p>
@@ -605,24 +604,21 @@ async function renderSettings() {
       
       <div style="margin-bottom: 16px;">
         <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-          <input type="checkbox" id="auto-update" ${settings.autoUpdate ? "checked" : ""}
-                 onchange="handleSettingChange('autoUpdate', this.checked)">
+          <input type="checkbox" id="auto-update" ${settings.autoUpdate ? "checked" : ""}>
           <span style="color: var(--text-primary);">Auto-update brew on launch</span>
         </label>
       </div>
       
       <div style="margin-bottom: 16px;">
         <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-          <input type="checkbox" id="notifications" ${settings.notifications ? "checked" : ""}
-                 onchange="handleSettingChange('notifications', this.checked)">
+          <input type="checkbox" id="notifications" ${settings.notifications ? "checked" : ""}>
           <span style="color: var(--text-primary);">Enable notifications</span>
         </label>
       </div>
       
       <div>
         <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-          <input type="checkbox" id="safe-mode" ${settings.safeMode ? "checked" : ""}
-                 onchange="handleSettingChange('safeMode', this.checked)">
+          <input type="checkbox" id="safe-mode" ${settings.safeMode ? "checked" : ""}>
           <span style="color: var(--text-primary);">Safe mode (always confirm actions)</span>
         </label>
       </div>
@@ -633,14 +629,12 @@ async function renderSettings() {
       <h3 style="margin-bottom: 16px; color: var(--text-primary);">Others</h3>
       <div style="margin-top:4px; margin-bottom: 24px;">
         <label style="display:block; margin-bottom:8px; color: var(--text-muted); font-size:14px;">Upgrade timeout (minutes)</label>
-        <input type="number" class="input" id="upgrade-timeout" min="1" value="${settings.upgradeTimeoutMinutes ?? 10}"
-               onchange="handleSettingChange('upgradeTimeoutMinutes', Number(this.value))" style="width: 300px;">
+        <input type="number" class="input" id="upgrade-timeout" min="1" value="${settings.upgradeTimeoutMinutes ?? 10}" style="width: 300px;">
         <p style="font-size:12px; color: var(--text-muted); margin-top:4px;">How many minutes to wait for activity before cancelling a stuck upgrade. Default: 10</p>
       </div>
       <div style="margin-top:4px;">
         <label style="display:block; margin-bottom:8px; color: var(--text-muted); font-size:14px;">Log retention (days)</label>
-        <input type="number" class="input" id="log-retention" min="1" value="${settings.logRetentionDays ?? 30}"
-               onchange="handleSettingChange('logRetentionDays', Number(this.value))" style="width: 300px;">
+        <input type="number" class="input" id="log-retention" min="1" value="${settings.logRetentionDays ?? 30}" style="width: 300px;">
         <p style="font-size:12px; color: var(--text-muted); margin-top:4px;">How many days to keep logs before deleting them. Default: 30</p>
       </div>
     </div>
@@ -655,6 +649,15 @@ async function renderSettings() {
           <br>
           Built with Electron, designed for macOS
         </div>
+      </div>
+      <div style="margin-top: 16px;">
+        <button class="btn btn-secondary" id="check-updates-btn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right: 8px;">
+            <path d="M8 2v6m0 0l3-3m-3 3L5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M14 10v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Check for Updates
+        </button>
       </div>
     </div>
 
@@ -676,6 +679,91 @@ async function setupViewListeners(view) {
   // installed view uses inline `oninput` to trigger handleInstalledSearch
   if (view === "installed") {
     // nothing to wire here; handlers are attached inline to inputs
+  }
+
+  // Settings view - attach event listeners
+  if (view === "settings") {
+    const themeSelect = document.getElementById("theme-select");
+    if (themeSelect) {
+      themeSelect.addEventListener("change", (e) => {
+        window.handleThemeChange(e.target.value);
+      });
+    }
+    
+    const pageSizeSelect = document.getElementById("page-size-select");
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener("change", (e) => {
+        window.handleSettingChange("pageSize", Number(e.target.value));
+      });
+    }
+    
+    const brewPathInput = document.getElementById("brew-path");
+    if (brewPathInput) {
+      brewPathInput.addEventListener("change", (e) => {
+        window.handleSettingChange("brewPath", e.target.value);
+      });
+    }
+    
+    const autoUpdateCheck = document.getElementById("auto-update");
+    if (autoUpdateCheck) {
+      autoUpdateCheck.addEventListener("change", (e) => {
+        window.handleSettingChange("autoUpdate", e.target.checked);
+      });
+    }
+    
+    const notificationsCheck = document.getElementById("notifications");
+    if (notificationsCheck) {
+      notificationsCheck.addEventListener("change", (e) => {
+        window.handleSettingChange("notifications", e.target.checked);
+      });
+    }
+    
+    const safeModeCheck = document.getElementById("safe-mode");
+    if (safeModeCheck) {
+      safeModeCheck.addEventListener("change", (e) => {
+        window.handleSettingChange("safeMode", e.target.checked);
+      });
+    }
+    
+    const upgradeTimeoutInput = document.getElementById("upgrade-timeout");
+    if (upgradeTimeoutInput) {
+      upgradeTimeoutInput.addEventListener("change", (e) => {
+        window.handleSettingChange("upgradeTimeoutMinutes", Number(e.target.value));
+      });
+    }
+    
+    const logRetentionInput = document.getElementById("log-retention");
+    if (logRetentionInput) {
+      logRetentionInput.addEventListener("change", (e) => {
+        window.handleSettingChange("logRetentionDays", Number(e.target.value));
+      });
+    }
+    
+    const checkUpdatesBtn = document.getElementById("check-updates-btn");
+    if (checkUpdatesBtn) {
+      checkUpdatesBtn.addEventListener("click", async () => {
+        checkUpdatesBtn.disabled = true;
+        checkUpdatesBtn.textContent = "Checking...";
+        
+        try {
+          await window.brewAPI.update.check();
+          window.app.showNotification("Update Check", "Checking for updates...", "info");
+        } catch (error) {
+          window.app.showNotification("Update Error", "Failed to check for updates", "error");
+        } finally {
+          setTimeout(() => {
+            checkUpdatesBtn.disabled = false;
+            checkUpdatesBtn.innerHTML = `
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right: 8px;">
+                <path d="M8 2v6m0 0l3-3m-3 3L5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M14 10v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Check for Updates
+            `;
+          }, 2000);
+        }
+      });
+    }
   }
 
   // install view uses inline `oninput` -> handleInstallSearch which debounces and calls handleSearch

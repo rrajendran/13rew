@@ -972,13 +972,31 @@ async function handleUpgradeErrorModal(errorMessage) {
 
 // Settings handlers
 async function handleThemeChange(theme) {
-  await window.brewAPI.settings.set('theme', theme);
-  window.app.applyTheme(theme);
+  console.log('Theme change requested:', theme);
+  try {
+    await window.brewAPI.settings.set('theme', theme);
+    window.app.applyTheme(theme);
+    window.app.showNotification('Theme Changed', `Applied ${theme} theme`, 'success');
+  } catch (error) {
+    console.error('Error changing theme:', error);
+    window.app.showNotification('Theme Error', 'Failed to change theme', 'error');
+  }
 }
 
 async function handleSettingChange(key, value) {
-  await window.brewAPI.settings.set(key, value);
-  window.app.showNotification('Settings Saved', `${key} updated`, 'success');
+  console.log('Setting change:', key, value);
+  try {
+    await window.brewAPI.settings.set(key, value);
+    window.app.showNotification('Settings Saved', `${key} updated`, 'success');
+    
+    // Reload view if pageSize changed to apply immediately
+    if (key === 'pageSize' && window.state.currentView === 'installed') {
+      await window.app.loadView('installed');
+    }
+  } catch (error) {
+    console.error('Error saving setting:', error);
+    window.app.showNotification('Settings Error', 'Failed to save setting', 'error');
+  }
 }
 
 // Modal utilities

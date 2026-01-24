@@ -8,7 +8,11 @@
     "dev": "electron . --dev",
     "build": "electron-builder",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder -mwl",
+    "publish": "electron-builder --publish always"
   },
   "keywords": [
     "homebrew",
@@ -23,11 +27,19 @@
     "electron-builder": "^24.9.0"
   },
   "dependencies": {
+    "electron-log": "^5.0.0",
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
     "vis-network": "^10.0.2"
   },
   "build": {
-    "publish": [],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "rrajendran",
+        "repo": "13rew"
+      }
+    ],
     "appId": "com.brewdesktop.app",
     "productName": "13rew",
     "files": [
@@ -38,8 +50,14 @@
       "category": "public.app-category.developer-tools",
       "icon": "assets/icons/mac/icon.icns",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
       ],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -59,6 +77,37 @@
           "path": "/Applications"
         }
       ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icons/win/icon.ico",
+      "publisherName": "13rew"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "category": "Development",
+      "icon": "assets/icons/png",
+      "maintainer": "rrajendran"
     }
   }
 }

@@ -41,6 +41,17 @@ contextBridge.exposeInMainWorld('brewAPI', {
   // Notifications
   notification: {
     send: (title, body) => ipcRenderer.invoke('notification:send', title, body)
+  },
+  
+  // Updates
+  update: {
+    check: () => ipcRenderer.invoke('update:check'),
+    install: () => ipcRenderer.invoke('update:install'),
+    onDownloadProgress: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:download-progress', listener);
+      return () => ipcRenderer.removeListener('update:download-progress', listener);
+    }
   }
 });
 

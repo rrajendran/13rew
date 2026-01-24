@@ -3,6 +3,10 @@ const path = require('path');
 const { spawn, execSync } = require('child_process');
 const Store = require('electron-store');
 const fs = require('fs');
+// Menubar module (tray + background agent)
+const menubar = require('./menubar');
+// Auto-updater module
+const updater = require('./updater');
 
 const store = new Store();
 
@@ -49,7 +53,7 @@ console.log('Detected brew path:', detectedBrewPath);
 
 let mainWindow;
 
-function createWindow() {
+function createWindow({ show = true } = {}) {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -62,7 +66,9 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    // Allow starting hidden when in menubar-only mode
+    show
   });
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
@@ -78,11 +84,51 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow();
+  // Restore preferences
+  const menubarEnabled = store.get('menubarEnabled', false);
+  const menubarOnly = store.get('menubarOnly', false);
+
+  // Apply dock visibility for menubar-only mode
+  if (process.platform === 'darwin' && menubarOnly) {
+    try { app.dock.hide(); } catch (e) {}
+  }
+
+  // Create main window based on mode
+  if (menubarOnly) {
+    // Start hidden; window will be created on demand from menubar
+    mainWindow = null;
+  } else {
+    createWindow({ show: true });
+  }
+
+  // Initialize menubar/tray on macOS (icon should always be available)
+  if (process.platform === 'darwin') {
+    menubar.init({
+      app,
+      getMainWindow: () => mainWindow,
+      openMainWindow: () => {
+        if (!mainWindow) {
+          createWindow({ show: true });
+        } else {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      }
+    });
+  }
+  
+  // Initialize auto-updater after window is ready
+  setTimeout(() => {
+    updater.init({ 
+      window: mainWindow || null
+    });
+  }, 1000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      // In menubar-only mode, keep the app hidden until requested
+      const menubarOnly = store.get('menubarOnly', false);
+      if (!menubarOnly) createWindow({ show: true });
     }
   });
 });
@@ -91,6 +137,13 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  // Ensure tray resources are cleaned up
+  try { menubar.dispose && menubar.dispose(); } catch (e) {}
+  // Cleanup updater
+  try { updater.dispose && updater.dispose(); } catch (e) {}
 });
 
 // IPC Handlers
@@ -613,4 +666,23 @@ function sendNotification(title, body) {
 ipcMain.handle('notification:send', async (event, title, body) => {
   sendNotification(title, body);
   return true;
+});
+
+// Update handlers
+ipcMain.handle('update:check', async () => {
+  try {
+    updater.checkForUpdates(true); // User-initiated check
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('update:install', async () => {
+  try {
+    updater.quitAndInstall();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
