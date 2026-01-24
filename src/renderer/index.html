@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>13rew</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/themes/night-drive.css" id="theme-stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Titlebar -->
+    <div class="titlebar">
+      <div class="titlebar-drag-region"></div>
+      <button id="sidebar-toggle" class="titlebar-button">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="3" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="8.5" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="14" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </button>
+      <div class="titlebar-title">13rew</div>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="#dashboard" class="nav-item active" data-view="dashboard">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span class="nav-text">Dashboard</span>
+          </a>
+
+          <div class="nav-group">
+            <div class="nav-group-title">Packages</div>
+            <a href="#installed" class="nav-item" data-view="installed">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 3L3 6.5V13.5L10 17L17 13.5V6.5L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10L3 6.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10V17" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10L17 6.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <span class="nav-text">Installed</span>
+            </a>
+            <a href="#outdated" class="nav-item" data-view="outdated">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 6V10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Outdated</span>
+            </a>
+            <a href="#services" class="nav-item" data-view="services">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 7h14v2H3zM3 11h14v2H3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Services</span>
+            </a>
+            <a href="#deps" class="nav-item" data-view="deps">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 4v4h4V4H4zM12 4v4h4V4h-4zM4 12v4h4v-4H4zM12 12v4h4v-4h-4z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Dependency Graph</span>
+            </a>
+          </div>
+
+          <a href="#install" class="nav-item" data-view="install">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 7V13M7 10H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Install</span>
+          </a>
+
+          <a href="#logs" class="nav-item" data-view="logs">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 7H13M7 10H13M7 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Logs</span>
+          </a>
+
+          <a href="#settings" class="nav-item" data-view="settings">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 3V5M10 15V17M17 10H15M5 10H3M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main id="main-content" class="main-content">
+        <!-- Views will be loaded here -->
+      </main>
+    </div>
+  </div>
+
+  <script src="js/views.js"></script>
+  <script src="js/actions.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>13rew</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/themes/night-drive.css" id="theme-stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Titlebar -->
+    <div class="titlebar">
+      <div class="titlebar-drag-region"></div>
+      <button id="sidebar-toggle" class="titlebar-button">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="3" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="8.5" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="11" y="14" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </button>
+      <div class="titlebar-title">13rew</div>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="#dashboard" class="nav-item active" data-view="dashboard">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span class="nav-text">Dashboard</span>
+          </a>
+
+          <div class="nav-group">
+            <div class="nav-group-title">Packages</div>
+            <a href="#installed" class="nav-item" data-view="installed">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 3L3 6.5V13.5L10 17L17 13.5V6.5L10 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10L3 6.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10V17" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 10L17 6.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <span class="nav-text">Installed</span>
+            </a>
+            <a href="#outdated" class="nav-item" data-view="outdated">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 6V10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Outdated</span>
+            </a>
+            <a href="#services" class="nav-item" data-view="services">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 7h14v2H3zM3 11h14v2H3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Services</span>
+            </a>
+            <a href="#deps" class="nav-item" data-view="deps">
+              <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 4v4h4V4H4zM12 4v4h4V4h-4zM4 12v4h4v-4H4zM12 12v4h4v-4h-4z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              <span class="nav-text">Dependency Graph</span>
+            </a>
+          </div>
+
+          <a href="#install" class="nav-item" data-view="install">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 7V13M7 10H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Install</span>
+          </a>
+
+          <a href="#logs" class="nav-item" data-view="logs">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 7H13M7 10H13M7 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Logs</span>
+          </a>
+
+          <a href="#settings" class="nav-item" data-view="settings">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 3V5M10 15V17M17 10H15M5 10H3M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="nav-text">Settings</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main id="main-content" class="main-content">
+        <!-- Views will be loaded here -->
+      </main>
+    </div>
+  </div>
+
+  <script src="js/views.js"></script>
+  <script src="js/actions.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

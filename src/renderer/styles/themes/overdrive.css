@@ -1,0 +1,35 @@
+/* Overdrive Theme - High Energy & Modern */
+:root {
+  /* Backgrounds */
+  --bg-deep: #121218;
+  --bg-surface: #1E1E2A;
+  
+  /* Actions */
+  --primary-action: #D946EF;
+  --accent-highlight: #3FB950;
+  --error-action: #F85149;
+  --secondary-turbo: #06B6D4;
+  
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-muted: #8B949E;
+  
+  /* Borders & Dividers */
+  --border-color: #2D2D3F;
+  
+  /* Interactive States */
+  --hover-bg: rgba(217, 70, 239, 0.1);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+
+  /* Pagination */
+  --pagination-bg: #1a1622;
+  --pagination-border: #352e40;
+  --pagination-color: #fff0ff;
+  --pagination-active-bg: #D946EF;
+  --pagination-active-color: #ffffff;
+  --pagination-radius: 8px;
+}

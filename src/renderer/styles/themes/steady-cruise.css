@@ -1,0 +1,35 @@
+/* Steady Cruise Theme - Professional Productivity Light Mode */
+:root {
+  /* Backgrounds */
+  --bg-deep: #F3F4F6;
+  --bg-surface: #FFFFFF;
+  
+  /* Actions */
+  --primary-action: #0F766E;
+  --accent-highlight: #3FB950;
+  --error-action: #DC2626;
+  --secondary-turbo: #EAB308;
+  
+  /* Text */
+  --text-primary: #111827;
+  --text-muted: #6B7280;
+  
+  /* Borders & Dividers */
+  --border-color: #E5E7EB;
+  
+  /* Interactive States */
+  --hover-bg: rgba(15, 118, 110, 0.08);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Pagination */
+  --pagination-bg: #FFFFFF;
+  --pagination-border: #E6EEF0;
+  --pagination-color: #0f1720;
+  --pagination-active-bg: #0F766E;
+  --pagination-active-color: #ffffff;
+  --pagination-radius: 8px;
+}
