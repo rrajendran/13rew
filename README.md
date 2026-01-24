@@ -31,7 +31,7 @@ A modern, native-feeling GUI for Homebrew — fast, safe, and developer-friendly
 
 ```bash
 # Clone or download this repository
-cd brew-manager
+cd 13rew
 
 # Install dependencies
 npm install
@@ -72,7 +72,7 @@ Professional light mode for productivity. Clear, calm, and focused.
 - **[Development Guide](DEVELOPMENT.md)** - Contributing and customization
 - **[Architecture](ARCHITECTURE.md)** - Technical architecture and design
 - **[Quick Reference](QUICK_REFERENCE.md)** - Commands and common tasks
-- **[Design Spec](brew-manager.instructions.md)** - Original product specification
+- **[Design Spec](13rew.instructions.md)** - Original product specification
 
 ## 🎯 Key Features Explained
 
