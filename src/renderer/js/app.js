@@ -7,9 +7,22 @@ window.state = window.state || {
   loading: false
 };
 
+// Cache frequently accessed DOM elements
+window.domCache = window.domCache || {
+  mainContent: null,
+  sidebar: null,
+  themeStylesheet: null,
+  navItems: null
+};
+
 // Initialize app
 async function init() {
   console.log('Initializing 13rew...');
+  
+  // Cache DOM elements
+  window.domCache.mainContent = document.getElementById('main-content');
+  window.domCache.sidebar = document.getElementById('sidebar');
+  window.domCache.themeStylesheet = document.getElementById('theme-stylesheet');
   
   // Load settings
   window.state.settings = await window.brewAPI.settings.getAll();
@@ -19,8 +32,8 @@ async function init() {
   applyTheme(window.state.settings.theme || 'night-drive');
   
   // Apply sidebar state
-  if (window.state.sidebarCollapsed) {
-    document.getElementById('sidebar').classList.add('collapsed');
+  if (window.state.sidebarCollapsed && window.domCache.sidebar) {
+    window.domCache.sidebar.classList.add('collapsed');
   }
   
   // Setup event listeners
@@ -38,9 +51,9 @@ function setupEventListeners() {
   const sidebarToggle = document.getElementById('sidebar-toggle');
   sidebarToggle.addEventListener('click', toggleSidebar);
   
-  // Navigation
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(item => {
+  // Navigation - cache nav items
+  window.domCache.navItems = document.querySelectorAll('.nav-item');
+  window.domCache.navItems.forEach(item => {
     item.addEventListener('click', async (e) => {
       e.preventDefault();
       const view = item.dataset.view;
@@ -51,7 +64,7 @@ function setupEventListeners() {
 
 // Toggle sidebar
 async function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
+  const sidebar = window.domCache.sidebar || document.getElementById('sidebar');
   window.state.sidebarCollapsed = !window.state.sidebarCollapsed;
   
   if (window.state.sidebarCollapsed) {
@@ -70,11 +83,13 @@ async function navigateTo(view) {
   
   window.state.currentView = view;
   
-  // Update active nav item
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
+  // Update active nav item using cached references
+  const navItems = window.domCache.navItems || document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
     if (item.dataset.view === view) {
       item.classList.add('active');
+    } else {
+      item.classList.remove('active');
     }
   });
   
@@ -84,7 +99,7 @@ async function navigateTo(view) {
 
 // Load view
 async function loadView(view) {
-  const mainContent = document.getElementById('main-content');
+  const mainContent = window.domCache.mainContent || document.getElementById('main-content');
   mainContent.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   
   try {
@@ -137,7 +152,7 @@ async function loadView(view) {
 // Apply theme
 function applyTheme(theme) {
   console.log('Applying theme:', theme);
-  const themeStylesheet = document.getElementById('theme-stylesheet');
+  const themeStylesheet = window.domCache.themeStylesheet || document.getElementById('theme-stylesheet');
   if (!themeStylesheet) {
     console.error('Theme stylesheet element not found!');
     return;

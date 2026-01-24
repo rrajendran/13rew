@@ -1000,20 +1000,31 @@ async function handleSettingChange(key, value) {
 }
 
 // Modal utilities
+// Cache for reducing querySelector overhead
+window._lastModalOverlay = window._lastModalOverlay || null;
+
 function showModal(title, content, options = {}) {
   return new Promise((resolve) => {
     const { loading = false, buttons = null } = options;
 
-    const existingModal = document.querySelector('.modal-overlay');
+    // Reuse cached reference if possible
+    let existingModal = window._lastModalOverlay;
+    if (!existingModal || !existingModal.parentNode) {
+      existingModal = document.querySelector('.modal-overlay');
+    }
+    
     if (existingModal) {
       existingModal.remove();
+      window._lastModalOverlay = null;
     }
 
+    // Use array join for efficient string building
     let modalButtons = '';
     if (buttons) {
-      modalButtons = buttons.map((btn, index) => 
+      const buttonStrings = buttons.map((btn, index) => 
         `<button class="btn ${btn.class || 'btn-secondary'}" id="modal-btn-${index}">${btn.label}</button>`
-      ).join('');
+      );
+      modalButtons = buttonStrings.join('');
     } else if (!loading) {
       modalButtons = `<button class="btn btn-secondary" id="modal-btn-close">Close</button>`;
     }
@@ -1036,10 +1047,13 @@ function showModal(title, content, options = {}) {
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
+    // Cache the new overlay for reuse
+    window._lastModalOverlay = document.querySelector('#modal-overlay');
+
     const closeModalAndResolve = (value) => {
-      const modal = document.querySelector('#modal-overlay');
-      if (modal) {
-        modal.remove();
+      if (window._lastModalOverlay && window._lastModalOverlay.parentNode) {
+        window._lastModalOverlay.remove();
+        window._lastModalOverlay = null;
       }
       resolve(value);
     };
@@ -1066,9 +1080,16 @@ function showModal(title, content, options = {}) {
 }
 
 function closeModal() {
-  const modal = document.querySelector('.modal-overlay');
-  if (modal) {
-    modal.remove();
+  // Use cached reference for better performance
+  if (window._lastModalOverlay && window._lastModalOverlay.parentNode) {
+    window._lastModalOverlay.remove();
+    window._lastModalOverlay = null;
+  } else {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) {
+      modal.remove();
+      window._lastModalOverlay = null;
+    }
   }
 }
 

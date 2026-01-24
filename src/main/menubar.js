@@ -101,19 +101,43 @@ function runBrew(command, args = [], { onStdout, onStderr } = {}) {
       return;
     }
     const proc = spawn(brewPath, [command, ...args]);
-    let stdout = '';
-    let stderr = '';
-    proc.stdout.on('data', (d) => {
-      const s = d.toString();
-      stdout += s;
-      if (onStdout) onStdout(s);
+    // Use arrays for efficient string accumulation
+    const stdoutChunks = [];
+    const stderrChunks = [];
+    
+    // Set encoding upfront
+    if (proc.stdout) {
+      proc.stdout.setEncoding('utf8');
+      proc.stdout.on('data', (d) => {
+        stdoutChunks.push(d);
+        if (onStdout) onStdout(d);
+      });
+    }
+    
+    if (proc.stderr) {
+      proc.stderr.setEncoding('utf8');
+      proc.stderr.on('data', (d) => {
+        stderrChunks.push(d);
+        if (onStderr) onStderr(d);
+      });
+    }
+    
+    // Cleanup function to remove listeners
+    const cleanup = () => {
+      if (proc.stdout) proc.stdout.removeAllListeners();
+      if (proc.stderr) proc.stderr.removeAllListeners();
+      proc.removeAllListeners();
+    };
+    
+    proc.on('error', (err) => {
+      cleanup();
+      reject({ success: false, error: String(err) });
     });
-    proc.stderr.on('data', (d) => {
-      const s = d.toString();
-      stderr += s;
-      if (onStderr) onStderr(s);
-    });
+    
     proc.on('close', (code) => {
+      cleanup();
+      const stdout = stdoutChunks.join('');
+      const stderr = stderrChunks.join('');
       if (code === 0) resolve({ success: true, output: stdout });
       else reject({ success: false, output: stdout, error: stderr, code });
     });
@@ -129,15 +153,28 @@ function notify(title, body) {
 async function updateTrayTooltipAndMenu() {
   if (!tray) return;
   try {
-    // Get package counts quickly without blocking UI
-    const [formulaeRes, casksRes, outdatedRes] = await Promise.all([
-      runBrew('list', ['--formula']).catch(() => ({ output: '' })),
-      runBrew('list', ['--cask']).catch(() => ({ output: '' })),
-      runBrew('outdated', []).catch(() => ({ output: '' }))
+    // Get package counts quickly with parallel execution and timeout protection
+    const [formulaeRes, casksRes, outdatedRes] = await Promise.race([
+      Promise.all([
+        runBrew('list', ['--formula']).catch(() => ({ output: '' })),
+        runBrew('list', ['--cask']).catch(() => ({ output: '' })),
+        runBrew('outdated', []).catch(() => ({ output: '' }))
+      ]),
+      new Promise((resolve) => setTimeout(() => resolve([{output:''},{output:''},{output:''}]), 10000))
     ]);
-    const total = (formulaeRes.output.split('\n').filter(Boolean).length || 0) +
-                  (casksRes.output.split('\n').filter(Boolean).length || 0);
-    const outdated = (outdatedRes.output.split('\n').filter(Boolean).length || 0);
+    
+    // Efficient line counting
+    const countLines = (output) => {
+      if (!output) return 0;
+      let count = 0;
+      for (let i = 0; i < output.length; i++) {
+        if (output[i] === '\n' && output[i-1] !== '\n') count++;
+      }
+      return output[output.length - 1] !== '\n' && output.length > 0 ? count + 1 : count;
+    };
+    
+    const total = countLines(formulaeRes.output) + countLines(casksRes.output);
+    const outdated = countLines(outdatedRes.output);
     
     // Cache the outdated count
     cachedOutdatedCount = outdated;

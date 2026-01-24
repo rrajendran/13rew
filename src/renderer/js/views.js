@@ -101,12 +101,20 @@ async function renderInstalled() {
     const items = await window.brewAPI.getInstalled("all");
     const pageSize = window.app.state.settings?.pageSize ?? 10;
 
-    // normalize packages to objects where possible
+    // Normalize packages to objects where possible. Do not infer or coerce
+    // whether an item is a cask or formula here — the backend provides
+    // explicit metadata in `types` when available and the renderer will
+    // display based on that. Keep raw available for debugging.
     const normalized = items.map((it) => {
-      if (typeof it === "string") return { name: it, type: "formula" };
+      console.debug("Installed item:", it);
+      if (typeof it === "string") {
+        return { name: it, types: null, raw: it };
+      }
+
       return {
-        name: it.name || it.full_name || it,
-        type: it.type || (it.cask ? "cask" : "formula"),
+        name: it.name || it.full_name || String(it),
+        types: Array.isArray(it.types) ? it.types : it.type ? [it.type] : null,
+        raw: it,
       };
     });
 
@@ -161,7 +169,7 @@ function renderInstalledPage() {
           (pkg) => `
         <div class="package-item" data-package="${pkg.name}">
           <div class="package-info">
-            <div class="package-name">${pkg.name} <span class="badge badge-info" style="margin-left:8px;">${escapeHtml(pkg.type || "formula")}</span></div>
+            <div class="package-name">${pkg.name} <span class="badge badge-info" style="margin-left:8px;">${escapeHtml(pkg.types ? (pkg.types.length === 1 ? pkg.types[0] : pkg.types.join(",")) : (pkg.type || "unknown"))}</span></div>
             <div class="package-version">Click for details</div>
           </div>
           <div class="package-actions">
@@ -318,9 +326,11 @@ function renderOutdatedPage() {
     return '<div class="empty-state"><p class="empty-state-text">No data</p></div>';
 
   const { items, page, pageSize, query } = data;
-  const filtered = items.filter((i) =>
-    i.name.toLowerCase().includes((query || "").toLowerCase()),
-  );
+  
+  // Optimize filtering with cached query lowercase
+  const queryLower = (query || '').toLowerCase();
+  const filtered = queryLower ? items.filter(i => i.name.toLowerCase().includes(queryLower)) : items;
+  
   const total = filtered.length;
   const start = (page - 1) * pageSize;
   const pageItems = filtered.slice(start, start + pageSize);
@@ -1036,7 +1046,7 @@ window.handleInstalledSearch = function (value) {
         (pkg) => `
       <div class="package-item" data-package="${pkg.name}">
         <div class="package-info">
-          <div class="package-name">${pkg.name} <span class="badge badge-info" style="margin-left:8px;">${escapeHtml(pkg.type || "formula")}</span></div>
+          <div class="package-name">${pkg.name} <span class="badge badge-info" style="margin-left:8px;">${escapeHtml(pkg.types ? (pkg.types.length === 1 ? pkg.types[0] : pkg.types.join(",")) : (pkg.type || "unknown"))}</span></div>
           <div class="package-version">Click for details</div>
         </div>
         <div class="package-actions">
