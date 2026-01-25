@@ -39,10 +39,46 @@ async function init() {
   // Setup event listeners
   setupEventListeners();
   
+  // Setup update event listeners
+  setupUpdateListeners();
+  
   // Load initial view
   await loadView('dashboard');
   
   console.log('13rew initialized');
+}
+
+// Setup update event listeners
+function setupUpdateListeners() {
+  if (!window.brewAPI.update || !window.brewAPI.update.onAvailable) return;
+  
+  // Listen for checking event
+  if (window.brewAPI.update.onChecking) {
+    window.brewAPI.update.onChecking(() => {
+      console.log('[INFO] Updater: Checking for updates from GitHub...');
+    });
+  }
+  
+  // Listen for update events
+  window.brewAPI.update.onAvailable((data) => {
+    console.log('[INFO] Update available:', data.version);
+    showNotification('Update Available', `Version ${data.version} is downloading...`, 'info');
+  });
+  
+  window.brewAPI.update.onNotAvailable((data) => {
+    console.log('[INFO] No update available. Current:', data.version);
+    showNotification('No Updates', 'You are running the latest version', 'success');
+  });
+  
+  window.brewAPI.update.onDownloaded((data) => {
+    console.log('[INFO] Update downloaded:', data.version);
+    showNotification('Update Ready', `Version ${data.version} ready to install. Restart to update.`, 'success');
+  });
+  
+  window.brewAPI.update.onError((data) => {
+    console.error('[ERROR] Update error:', data.message);
+    showNotification('Update Error', data.message || 'Failed to check for updates', 'error');
+  });
 }
 
 // Setup event listeners

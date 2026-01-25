@@ -47,6 +47,31 @@ contextBridge.exposeInMainWorld('brewAPI', {
   update: {
     check: () => ipcRenderer.invoke('update:check'),
     install: () => ipcRenderer.invoke('update:install'),
+    onChecking: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:checking', listener);
+      return () => ipcRenderer.removeListener('update:checking', listener);
+    },
+    onAvailable: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:available', listener);
+      return () => ipcRenderer.removeListener('update:available', listener);
+    },
+    onNotAvailable: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:not-available', listener);
+      return () => ipcRenderer.removeListener('update:not-available', listener);
+    },
+    onDownloaded: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:downloaded', listener);
+      return () => ipcRenderer.removeListener('update:downloaded', listener);
+    },
+    onError: (callback) => {
+      const listener = (event, data) => callback(data);
+      ipcRenderer.on('update:error', listener);
+      return () => ipcRenderer.removeListener('update:error', listener);
+    },
     onDownloadProgress: (callback) => {
       const listener = (event, data) => callback(data);
       ipcRenderer.on('update:download-progress', listener);
