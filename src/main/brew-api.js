@@ -599,7 +599,12 @@ function init({ ipcMain, store, getMainWindow, detectedBrewPath }) {
         const mw = getMainWindow();
         mw?.webContents.send('brew:upgrade:progress', { line: text });
         const m = text.match(/^(?:==>\s)?Upgrading\s(.+?)\s/);
-        if (m && m[1]) mw?.webContents.send('brew:upgrade:current', { package: m[1].trim() });
+        if (m && m[1]) {
+          const candidate = m[1].trim();
+          // Ignore numeric-only or progress-like matches (e.g., "1" or "1/23")
+          // Only emit current package when the candidate contains letters (typical package names)
+          if (/[A-Za-z]/.test(candidate)) mw?.webContents.send('brew:upgrade:current', { package: candidate });
+        }
       });
 
       proc.stderr.on('data', (data) => {

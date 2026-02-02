@@ -319,7 +319,12 @@ function handleBrewUpgradeAll() {
       // Try to capture current package
       const m = line.match(/^(?:==>\s)?Upgrading\s(.+?)\s/);
       if (m && m[1]) {
-        try { win && win.webContents.send('brew:upgrade:current', { package: m[1].trim() }); } catch (_) {}
+        const candidate = m[1].trim();
+        // Ignore numeric-only or progress-like matches (e.g., "1" or "1/23")
+        // Only emit current package when the candidate looks like a package name
+        if (/[A-Za-z]/.test(candidate)) {
+          try { win && win.webContents.send('brew:upgrade:current', { package: candidate }); } catch (_) {}
+        }
       }
     },
     onStderr: (line) => {
