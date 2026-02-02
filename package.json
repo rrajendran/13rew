@@ -12,7 +12,8 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
     "build:all": "electron-builder -mwl",
-    "publish": "electron-builder --publish always"
+    "publish": "electron-builder --publish always",
+    "publish:all": "electron-builder -mwl --publish always"
   },
   "keywords": [
     "homebrew",
