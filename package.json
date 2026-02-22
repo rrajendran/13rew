@@ -1,6 +1,6 @@
 {
   "name": "13rew",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern, native-feeling GUI for Homebrew",
   "main": "src/main/main.js",
   "scripts": {
@@ -13,7 +13,10 @@
     "build:linux": "electron-builder --linux",
     "build:all": "electron-builder -mwl",
     "publish": "electron-builder --publish always",
-    "publish:all": "electron-builder -mwl --publish always"
+    "publish:all": "electron-builder -mwl --publish always",
+    "release:mac": "electron-builder --mac --publish always",
+    "release:all": "electron-builder -mwl --publish always",
+    "gh:release": "node scripts/gh-release.js"
   },
   "keywords": [
     "homebrew",
