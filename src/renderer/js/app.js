@@ -50,32 +50,32 @@ async function init() {
 
 // Setup update event listeners
 function setupUpdateListeners() {
-  if (!window.brewAPI.update || !window.brewAPI.update.onAvailable) return;
+  if (!window.brewAPI.appUpdate || !window.brewAPI.appUpdate.onAvailable) return;
   
   // Listen for checking event
-  if (window.brewAPI.update.onChecking) {
-    window.brewAPI.update.onChecking(() => {
+  if (window.brewAPI.appUpdate.onChecking) {
+    window.brewAPI.appUpdate.onChecking(() => {
       console.log('[INFO] Updater: Checking for updates from GitHub...');
     });
   }
   
   // Listen for update events
-  window.brewAPI.update.onAvailable((data) => {
+  window.brewAPI.appUpdate.onAvailable((data) => {
     console.log('[INFO] Update available:', data.version);
     showNotification('Update Available', `Version ${data.version} is downloading...`, 'info');
   });
   
-  window.brewAPI.update.onNotAvailable((data) => {
+  window.brewAPI.appUpdate.onNotAvailable((data) => {
     console.log('[INFO] No update available. Current:', data.version);
     showNotification('No Updates', 'You are running the latest version', 'success');
   });
   
-  window.brewAPI.update.onDownloaded((data) => {
+  window.brewAPI.appUpdate.onDownloaded((data) => {
     console.log('[INFO] Update downloaded:', data.version);
     showNotification('Update Ready', `Version ${data.version} ready to install. Restart to update.`, 'success');
   });
   
-  window.brewAPI.update.onError((data) => {
+  window.brewAPI.appUpdate.onError((data) => {
     console.error('[ERROR] Update error:', data.message);
     showNotification('Update Error', data.message || 'Failed to check for updates', 'error');
   });
@@ -159,6 +159,9 @@ async function loadView(view) {
         break;
       case 'install':
         html = await renderInstall();
+        break;
+      case 'leaves':
+        html = await renderLeaves();
         break;
       case 'logs':
         html = await renderLogs();

@@ -646,6 +646,20 @@ function init({ ipcMain, store, getMainWindow, detectedBrewPath }) {
     return store.get('logs', []);
   });
 
+  // Get leaf packages (no dependents)
+  ipcMain.handle('brew:leaves', async () => {
+    try {
+      const result = await executeBrewCommand('leaves', []);
+      const names = (result.output || '')
+        .split(/\r?\n/)
+        .map(l => l.trim())
+        .filter(Boolean);
+      return { success: true, packages: names };
+    } catch (error) {
+      return { success: false, packages: [], error: error.error || error.message || String(error) };
+    }
+  });
+
   // Notification handler
   ipcMain.handle('notification:send', async (event, title, body) => {
     sendNotification(title, body);

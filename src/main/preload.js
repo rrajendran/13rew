@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('brewAPI', {
   upgrade: (packageName) => ipcRenderer.invoke('brew:upgrade', packageName),
   update: () => ipcRenderer.invoke('brew:update'),
   getLogs: () => ipcRenderer.invoke('brew:logs'),
+  getLeaves: () => ipcRenderer.invoke('brew:leaves'),
   
   // Progress listener
   onProgress: (callback) => {
@@ -43,8 +44,8 @@ contextBridge.exposeInMainWorld('brewAPI', {
     send: (title, body) => ipcRenderer.invoke('notification:send', title, body)
   },
   
-  // Updates
-  update: {
+  // Updates (auto-updater namespace)
+  appUpdate: {
     check: () => ipcRenderer.invoke('update:check'),
     install: () => ipcRenderer.invoke('update:install'),
     onChecking: (callback) => {

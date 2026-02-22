@@ -458,6 +458,57 @@ function renderInstallPage() {
 }
 
 // Logs View
+async function renderLeaves() {
+  try {
+    const result = await window.brewAPI.getLeaves();
+    const packages = (result && result.packages) || [];
+
+    if (!packages.length) {
+      return `
+        <div class="view-header">
+          <h1 class="view-title">Leaves</h1>
+          <p class="view-subtitle">Top-level packages with no dependents</p>
+        </div>
+        <div class="empty-state">
+          <h2 class="empty-state-title">No Leaf Packages</h2>
+          <p class="empty-state-text">All installed packages are dependencies of another package.</p>
+        </div>
+      `;
+    }
+
+    const rows = packages.map(name => `
+      <div class="package-item">
+        <div class="package-info">
+          <div class="package-name">${escapeHtml(name)}</div>
+          <div class="package-version">leaf</div>
+        </div>
+        <div class="package-actions">
+          <button class="btn btn-secondary" onclick="handlePackageInfo('${escapeHtml(name)}')">Info</button>
+          <button class="btn btn-secondary" onclick="handleUpgrade('${escapeHtml(name)}')">Upgrade</button>
+          <button class="btn btn-danger" onclick="handleUninstall('${escapeHtml(name)}')">Uninstall</button>
+        </div>
+      </div>
+    `).join('');
+
+    return `
+      <div class="view-header">
+        <h1 class="view-title">Leaves</h1>
+        <p class="view-subtitle">${packages.length} top-level package${packages.length !== 1 ? 's' : ''} with no dependents</p>
+      </div>
+      <div class="package-list">
+        ${rows}
+      </div>
+    `;
+  } catch (error) {
+    return `
+      <div class="empty-state">
+        <h2 class="empty-state-title">Error Loading Leaves</h2>
+        <p class="empty-state-text">${error.message || String(error)}</p>
+      </div>
+    `;
+  }
+}
+
 async function renderLogs() {
   try {
     const logs = await window.brewAPI.getLogs();
@@ -756,7 +807,7 @@ async function setupViewListeners(view) {
         checkUpdatesBtn.textContent = "Checking...";
         
         try {
-          await window.brewAPI.update.check();
+          await window.brewAPI.appUpdate.check();
           window.app.showNotification("Update Check", "Checking for updates...", "info");
         } catch (error) {
           window.app.showNotification("Update Error", "Failed to check for updates", "error");
