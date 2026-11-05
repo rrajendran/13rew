@@ -76,5 +76,50 @@ echo -e "${GREEN}→ Pushing to origin${NC}"
 git push origin main
 git push origin "v${new_version}"
 
-echo -e "${GREEN}✓ Release v${new_version} completed successfully!${NC}"
-echo "GitHub Actions will now build and publish the release."
+# ── Build ────────────────────────────────────────────────────────────────────
+echo -e "${GREEN}→ Building macOS artifacts${NC}"
+npm run build:mac
+
+# ── Create GitHub release ────────────────────────────────────────────────────
+echo -e "${GREEN}→ Creating GitHub release v${new_version}${NC}"
+
+# Pick release notes file if it exists
+NOTES_FILE="RELEASE_NOTES_v${new_version}.md"
+NOTES_FLAG=""
+if [ -f "$NOTES_FILE" ]; then
+  NOTES_FLAG="--notes-file $NOTES_FILE"
+else
+  NOTES_FLAG="--generate-notes"
+fi
+
+gh release create "v${new_version}" \
+  --title "13rew v${new_version}" \
+  $NOTES_FLAG \
+  --latest
+
+# ── Upload artifacts ─────────────────────────────────────────────────────────
+echo -e "${GREEN}→ Uploading artifacts${NC}"
+pushd dist > /dev/null
+
+for f in \
+  "*.dmg" \
+  "*-mac.zip" \
+  "*.exe" \
+  "*.AppImage" \
+  "*.deb" \
+  "*.tar.gz" \
+  "latest*.yml"; do
+  # expand glob; skip if nothing matches
+  shopt -s nullglob
+  files=( $f )
+  shopt -u nullglob
+  for artifact in "${files[@]}"; do
+    echo "  Uploading: $artifact"
+    gh release upload "v${new_version}" "$artifact" --clobber
+  done
+done
+
+popd > /dev/null
+
+echo -e "${GREEN}✓ Release v${new_version} published to GitHub!${NC}"
+echo "  https://github.com/rrajendran/13rew/releases/tag/v${new_version}"
